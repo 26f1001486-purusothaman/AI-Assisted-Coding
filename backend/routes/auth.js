@@ -7,7 +7,7 @@ const requireAuth = require('../middleware/requireAuth');
 const router = express.Router();
 const sessionCookie = {
   httpOnly: true,
-  sameSite: 'lax',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   secure: process.env.NODE_ENV === 'production',
   path: '/',
   maxAge: 7 * 24 * 60 * 60 * 1000,

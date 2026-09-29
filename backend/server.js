@@ -1,6 +1,7 @@
 const path = require('path');
 const dotenv = require('dotenv');
 const express = require('express');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 
@@ -11,7 +12,21 @@ const listingRoutes = require('./routes/listings');
 const app = express();
 const port = process.env.PORT || 5000;
 const mongoUri = process.env.MONGODB_URI;
+const defaultClientOrigins = 'http://localhost:5173,http://127.0.0.1:5173';
+const allowedOrigins = new Set(
+  (process.env.CLIENT_ORIGIN || defaultClientOrigins)
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+);
 
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.has(origin)) return callback(null, true);
+    return callback(new Error('Origin not allowed by CORS'));
+  },
+  credentials: true,
+}));
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 
